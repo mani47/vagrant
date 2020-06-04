@@ -6,8 +6,13 @@ Vagrant.configure("2") do |config|
     vb.memory = "4096"
   end
   config.vm.network "forwarded_port", guest: 3002, host:3002
-  config.vm.synced_folder "/Users/mani47/Projects", "/home/vagrant/Projects", type: "virtualbox"
-  config.vm.synced_folder "/Users/mani47/.ssh", "/home/vagrant/.ssh", type: "virtualbox"
+  config.vm.network "forwarded_port", guest: 443,  host:443
+  config.vm.network "forwarded_port", guest: 80,   host:80
+  config.vm.network "forwarded_port", guest: 8000, host:8000
+  config.vm.network "forwarded_port", guest: 9999, host:9999
+  config.vm.synced_folder "/Users/mani47/Projects", "/home/vagrant/Projects", type: "virtualbox", group: "acceptto"
+  config.vm.synced_folder "/Users/mani47/.ssh", "/home/vagrant/.host_ssh", type: "virtualbox"
+  config.vm.synced_folder "/Users/mani47/Downloads", "/home/vagrant/Downloads", type: "virtualbox"
   config.vm.boot_timeout = 600
   config.vm.provision "shell", inline: <<-SHELL
   sudo apt-get update
@@ -42,5 +47,7 @@ Vagrant.configure("2") do |config|
   sudo curl -L "https://github.com/docker/compose/releases/download/1.25.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
   sudo chmod +x /usr/local/bin/docker-compose
   echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+  sudo addgroup --gid 2000 acceptto
+  mkdir /home/vagrant/.host_ssh
   SHELL
 end
